@@ -1,3 +1,3 @@
 # BulletinBoard
-Adonia Jebessa
-Morgan Weltzer
+- Adonia Jebessa
+- Morgan Weltzer
