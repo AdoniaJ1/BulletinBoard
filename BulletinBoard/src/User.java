@@ -1,14 +1,14 @@
 // public class  User {
 //     private String username;
-//     private Socket socketNumber;
+//     //private Socket socketNumber;
 
-//     public Socket getSocketNumber() {
-//         return this.socketNumber;
-//     }
+//     // public Socket getSocketNumber() {
+//     //     return this.socketNumber;
+//     // }
 
-//     public void setSocketNumber(Socket socketNumber) {
-//         this.socketNumber = socketNumber;
-//     }
+//     // public void setSocketNumber(Socket socketNumber) {
+//     //     this.socketNumber = socketNumber;
+//     // }
 
 //     public User(String username){//other arguments?
 //         setUsername(username);
@@ -22,5 +22,3 @@
 //         this.username = username;
 //     }
 // }
-
-

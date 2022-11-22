@@ -9,6 +9,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Scanner;
+
+//ADD TOGGLES FOR VISIBILITY FOR THE UI LAYOUT. WHEN THE ENTER IS CLICKED FOR THE NAME TOGGLE THE USERNAME ENTER LAYOUT TO FALSE.
+//Move frame info to the Switch_Frames file.
 
 
 public class Multiple_Chat_Server_Chat extends JFrame{
@@ -17,14 +21,18 @@ public class Multiple_Chat_Server_Chat extends JFrame{
     private JTextArea chatWindow;
     private int PORT=1990;
     //
+    
     public ArrayList<PrintWriter> clientOutputStreams;
     public ArrayList<String> users;
     public ArrayList<Socket> clientSockets;
+
     public Multiple_Chat_Server_Chat(){
-        super("SERVER SIDE CHAT APP");
+        super("Bulletin Board");
+
+        //action listener for button
+
         userText = new JTextField();
         userText.setEditable(true);
-
         userText.addActionListener(
             new ActionListener(){
                 public void actionPerformed(ActionEvent event){
@@ -33,19 +41,28 @@ public class Multiple_Chat_Server_Chat extends JFrame{
                 }
             }
         );
+        
+
         add(userText, BorderLayout.SOUTH);
         chatWindow = new JTextArea();
         chatWindow.setEditable(false);
-        add(new JScrollPane(chatWindow));
+       add(new JScrollPane(chatWindow));
         setSize(600, 350); 
         setVisible(true);
-        showMessage("This is the server. \n");
-        showMessage("Connexion at : localhost:"+PORT );
 
+        //set Swing
+        UserNamePanel usernamePanel = new UserNamePanel(users);
+        usernamePanel.setVisible(true);
+        this.add(usernamePanel);
+
+        showMessage("Welcome to the bulletin board! \n");
+        showMessage("Connection at : localhost:"+PORT );
+        //setLayout(new GridLayout());
+
+        }
+        
+    //username event handler
     
-
-            
-    }
     
     public void startServer(){
         new Thread(new ServerStart()).start();
@@ -57,7 +74,7 @@ public class Multiple_Chat_Server_Chat extends JFrame{
     }
     
     private void sendMessage(String message){
-        message = ("SERVER: " + message);
+        message = ("Server: " + message);
         sendToAll(message);
     }
     
