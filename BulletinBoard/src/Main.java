@@ -12,10 +12,12 @@ import javax.swing.JFrame;
 
 public class Main {
 
-	public static void main(String[] args){
-
-		Multiple_Chat_Server_Chat chat = new Multiple_Chat_Server_Chat();
-
-		chat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public static void main(String[] args) throws Exception{
+		//int port = Integer.parseInt(args[0]); //getting port number from command line
+		int port = 1990;
+		Server server = new Server(port); //creating new server based on port number
+		//Multiple_Chat_Server_Chat chat = new Multiple_Chat_Server_Chat();
+		new Client(1990, server);
+		//chat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }
