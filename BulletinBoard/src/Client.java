@@ -11,7 +11,6 @@ public class Client
     private Server server;
     private List<String> usernames;
     private Socket socket;
-    // Getting the streams for the server
     private DataOutputStream dout;
     private DataInputStream din;
 
@@ -32,10 +31,8 @@ public class Client
         // Initiate the connection
         System.out.println( "trying to connect "+socket );
         this.socket = new Socket(InetAddress.getLocalHost().getHostName(), 1990);
-        // We got a connection! Tell the world
         System.out.println( "connected to "+socket );
-        // Let's grab the streams and create DataInput/Output streams
-        // from them
+
         din = new DataInputStream( socket.getInputStream() );
         dout = new DataOutputStream( socket.getOutputStream() );
 
@@ -45,8 +42,12 @@ public class Client
 
         //frame.add(userNamePanel);
         //chatPanel.setVisible(false);
+
         frame.add(chatPanel);
         frame.setVisible(true);
+
+        String line = "";
+
 
         } catch( IOException ie ) { System.out.println( ie ); }
 

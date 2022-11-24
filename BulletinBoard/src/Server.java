@@ -5,7 +5,7 @@ import java.util.*;
 public class Server {
 
     private ServerSocket ss;
-    List<User> users;
+    private List<User> users;
     List<User> usersGroup1;
     List<User> usersGroup2;
     List<User> usersGroup3;
@@ -18,6 +18,7 @@ public class Server {
     List<Message> messagesGroup3;
     List<Message> messagesGroup4;
     List<Message> messagesGroup5;
+    private DataInputStream din;
 
     // retrieveMessage(MessageID){
     //     return MessageContent
@@ -28,7 +29,7 @@ public class Server {
     // }
 
     public Server(int portNumber) throws IOException {
-
+        users = Collections.<User>emptyList();
         this.ss = new ServerSocket(portNumber);
         while(true){ //start loop to accept incoming requests
 
@@ -37,8 +38,12 @@ public class Server {
             System.out.println( "accepting on "+ss );
             DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 
-            User newUser = new User(dout, socket);
-            users.add(newUser);
+            din = new DataInputStream(
+                new BufferedInputStream(socket.getInputStream()));
+            // User newUser = new User(dout, socket);
+            // users.add(newUser);
+
+            String line = "";
 
             new ServerThread(this, socket);
         }
@@ -49,19 +54,16 @@ public class Server {
     }
 
     void sendToAll(String message, String group, String sender) {
-        // We synchronize on this because another thread might be
-        // calling removeConnection() and this would screw us up
-        // as we tried to walk through the list
 
         synchronized(this.getUsers()) {
             List<User> users = this.getUsers();
-            // For each client ...
+
             for(User user: users) {
-            // ... get the output stream ...
+
                 String username = user.getUsername();
                 if(username != sender){
                     DataOutputStream dout = user.getOutputStream();
-                // ... and send the message
+
                     try {
                         switch(group) {
                         case "PUBLIC":
