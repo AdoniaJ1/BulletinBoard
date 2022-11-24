@@ -19,7 +19,7 @@ public class ServerThread extends Thread
 // constructor.
 public void run() {
     try {
-
+        System.out.println( "In server thread ");
         // Create a DataInputStream for communication; the client
         // is using a DataOutputStream to write to us
         DataInputStream din = new DataInputStream(socket.getInputStream());

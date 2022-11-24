@@ -1,16 +1,9 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.Scanner;
 
 public class Server {
 
-    private int portNumber;
-    //int socketNumber;
-    static int clientID;
-    //static Vector<ClientIdentifier> clist = new Vector<>();
-    
-    private Socket socket;
     private ServerSocket ss;
     List<User> users;
     List<User> usersGroup1;
@@ -37,29 +30,24 @@ public class Server {
     public Server(int portNumber) throws IOException {
 
         this.ss = new ServerSocket(portNumber);
-        this.socket = new Socket();
-        
-        this.portNumber = portNumber;
         while(true){ //start loop to accept incoming requests
-            
+
             System.out.println( "Listening on "+ss );
-            this.socket = ss.accept();
+            Socket socket = ss.accept();
+            System.out.println( "accepting on "+ss );
             DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
-            //outputStreams.put( socket, dout );
+
             User newUser = new User(dout, socket);
             users.add(newUser);
 
-            //ClientIdentifier cid = new ClientIdentifier(socket, "Client ID: " + clientID, din, dout);
-            //Thread t = new Thread(ClientIdentifier); 
-
-            new ServerThread(this, this.socket);
+            new ServerThread(this, socket);
         }
     }
 
     public List<User> getUsers(){
         return this.users;
     }
-    
+
     void sendToAll(String message, String group, String sender) {
         // We synchronize on this because another thread might be
         // calling removeConnection() and this would screw us up
