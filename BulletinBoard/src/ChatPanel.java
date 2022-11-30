@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 
 public class ChatPanel extends JPanel implements Runnable{
+    //private static JPanel chatPanel = new JPanel();
 
     private static JTextField subjectBox = new JTextField(25);
     private static JTextField contentBox = new JTextField(25);
@@ -23,7 +24,7 @@ public class ChatPanel extends JPanel implements Runnable{
     // private static JButton joinGroup5Button = new JButton("Join Group 5");
 
    //setting the layuout for the
-        
+
     private DataOutputStream dout;
 
     private Socket socket;
@@ -37,78 +38,38 @@ public class ChatPanel extends JPanel implements Runnable{
     private DataInputStream din;
 
     public ChatPanel(String groupName, User user, Group group) {
-        
+
         this.user = user;
         this.group = group;
         //setLayout(getLayout());
         setGroupName(groupName);
         this.add(subjectBox);
         this.add(contentBox);
+        this.add(enterButton);
+        this.add(chatWindow);
         enterButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 enterButtonClick(e);
             }
         });
-
-        // try {
-        // // Initiate the connection
-        // this.socket = new Socket(InetAddress.getLocalHost().getHostName(), 195);
-        // // We got a connection! Tell the world
-        // System.out.println( "connected to "+socket );
-        // // Let's grab the streams and create DataInput/Output streams
-        // // from them
-        // din = new DataInputStream( socket.getInputStream() );
-        // dout = new DataOutputStream( socket.getOutputStream() );
-        // // Start a background thread for receiving messages
-        // new Thread( this ).start();
-        // } catch( IOException ie ) { System.out.println( ie ); }
-        // disconnectButton.addActionListener(new ActionListener(){
-        //     public void actionPerformed(ActionEvent e){
-        //         disconnectButtonClick(e);
-        //     }
-        // });
-        // joinGroup1Button.addActionListener(new ActionListener(){
-        //     public void actionPerformed(ActionEvent e){
-        //         addUserToGroup(e);
-        //     }
-        // });
     }
 
      public void enterButtonClick(ActionEvent e){
+        System.out.println( "enterbuttonClick!!!!!\n" );
         String subject = subjectBox.getText();
         String content = contentBox.getText();
-        messageEntered = new Message(messageID, user.getUsername(), LocalDateTime.now(), subject, content, this.group);
+        messageEntered = new Message(this.messageID, "hehe", LocalDateTime.now(), subject, content, this.group);
         this.chatWindow.append(messageEntered.toString()+"\n");
-        switch(this.group) {
-            case PUBLIC:
-                this.server.publicMessages.add(messageEntered);
-                break;
-            case ONE:
-                this.server.messagesGroup1.add(messageEntered);
-                break;
-            case TWO:
-                this.server.messagesGroup2.add(messageEntered);
-                break;
-            case THREE:
-                this.server.messagesGroup3.add(messageEntered);
-                break;
-            case FOUR:
-                this.server.messagesGroup4.add(messageEntered);
-                break;
-            case FIVE:
-                this.server.messagesGroup5.add(messageEntered);
-                break;
-            default:
-                break;
-        }
+
         processMessage(messageEntered);
         this.messageID++;
     }
 
     private void processMessage(Message message ) {
         try {
+            System.out.println( "HI" );
         // Send it to the server
-        this.dout.writeUTF( message.toProtocol());
+        this.user.getOutputStream().writeUTF(message.toProtocol());
         // Clear out text input field
         subjectBox.setText( "" );
         contentBox.setText( "" );
@@ -123,6 +84,10 @@ public class ChatPanel extends JPanel implements Runnable{
         return this.group;
     }
 
+    public JTextArea getChatWindow() {
+        return this.chatWindow;
+    }
+
     public void setGroupName(String groupName) {
 
         this.groupName = new JLabel(groupName);
@@ -131,7 +96,7 @@ public class ChatPanel extends JPanel implements Runnable{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
     // public void disconnectButtonClick(ActionEvent e){

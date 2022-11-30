@@ -3,7 +3,6 @@ import java.net.Socket;
 
 public class ServerThread extends Thread
 {
-
     private Server server;
 
     private Socket socket;
@@ -23,17 +22,15 @@ public void run() {
         DataInputStream din = new DataInputStream(socket.getInputStream());
 
         while (true) {
+            System.out.println( "In while loop" );
 
             String message = din.readUTF();
 
             System.out.println( "Sending " + message );
 
-            String[] splitMessage = message.split(":");
-            String group = splitMessage[4];
-            String sender = splitMessage[1];
-
-            server.sendToAll(message, group, sender);
+            server.sendToAll(message);
         }
+
     } catch( EOFException ie ) {
 
     } catch( IOException ie ) {
