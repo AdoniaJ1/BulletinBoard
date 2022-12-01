@@ -41,6 +41,14 @@ public void run() {
                     break;
                 case "joinGroup":
                     String[] splitMessage = commandAndContents[1].split("%");
+                    Group joinedGroup = Group.valueOf(splitMessage[0]);
+                    for (Group group : Group.values()) {
+                        if(joinedGroup == group){
+                            server.groupListsMap.get(group).add(splitMessage[1]);
+                        }
+                    }
+                    dout.writeUTF("newUser@"+splitMessage[0]+"@"+splitMessage[1]);
+
                     System.out.println(splitMessage[0]+splitMessage[1]);
                     break;
                 default:

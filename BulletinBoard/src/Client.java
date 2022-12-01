@@ -99,6 +99,7 @@ public class Client implements Runnable
                     System.out.println("adding message button");
                     c.add(messageAsButton);
                     tabbedPane.setComponentAt(i, c);
+                    tabbedPane.revalidate();
                 }
             }
         }

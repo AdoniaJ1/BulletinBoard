@@ -9,11 +9,7 @@ public class Server {
     private Hashtable<Socket,DataOutputStream> outputStreams = new Hashtable();
 
     ArrayList<String> usernames;
-    List<User> usersGroup1;
-    List<User> usersGroup2;
-    List<User> usersGroup3;
-    List<User> usersGroup4;
-    List<User> usersGroup5;
+    Map<Group, ArrayList<String>> groupListsMap = new HashMap<Group, ArrayList<String>>();
 
     List<Message> publicMessages;
     List<Message> messagesGroup1;
@@ -31,6 +27,17 @@ public class Server {
     // }
 
     public Server(int portNumber) throws IOException {
+        ArrayList<String> usersGroup1 = new ArrayList<String>();
+        ArrayList<String> usersGroup2 = new ArrayList<String>();
+        ArrayList<String> usersGroup3 = new ArrayList<String>();
+        ArrayList<String> usersGroup4 = new ArrayList<String>();
+        ArrayList<String> usersGroup5 = new ArrayList<String>();
+        this.groupListsMap.put(Group.ONE, usersGroup1);
+        this.groupListsMap.put(Group.TWO, usersGroup2);
+        this.groupListsMap.put(Group.THREE, usersGroup3);
+        this.groupListsMap.put(Group.FOUR, usersGroup4);
+        this.groupListsMap.put(Group.FIVE, usersGroup5);
+
         usernames = new ArrayList<String>();
         this.ss = new ServerSocket(portNumber);
         while(true){ //start loop to accept incoming requests
