@@ -1,10 +1,12 @@
 import java.io.*;
 import java.net.Socket;
 
+import javax.swing.JFrame;
+
 public class ServerThread extends Thread
 {
-    private Server server;
 
+    private Server server;
     private Socket socket;
 
     public ServerThread( Server server, Socket socket ) {
@@ -20,15 +22,32 @@ public void run() {
         System.out.println( "In server thread ");
 
         DataInputStream din = new DataInputStream(socket.getInputStream());
+        DataOutputStream dout = new DataOutputStream(socket.getOutputStream() );
 
         while (true) {
-            System.out.println( "In while loop" );
-
             String message = din.readUTF();
+            String[] commandAndContents = message.split("%%",2);
+            String str = "";
+            switch (commandAndContents[0]) {
+                case "usernames":
+                    System.out.println( "usernames requested" );
+                    str = server.usernames.toString();
+                    str = str.substring(1, str.length() - 1);
+                    dout.writeUTF("%usernames%"+str);
+                    break;
+                case "newname":
+                    System.out.println( "username \"" + commandAndContents[1]+"\" added");
+                    server.usernames.add(commandAndContents[1]);
+                    break;
+                case "joinGroup":
+                    String[] splitMessage = commandAndContents[1].split("%");
+                    System.out.println(splitMessage[0]+splitMessage[1]);
+                    break;
+                default:
+                    server.sendToAll(message);
+                    break;
+            }
 
-            System.out.println( "Sending " + message );
-
-            server.sendToAll(message);
         }
 
     } catch( EOFException ie ) {

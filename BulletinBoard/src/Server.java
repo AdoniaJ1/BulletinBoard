@@ -5,7 +5,10 @@ import java.util.*;
 public class Server {
 
     private ServerSocket ss;
-    private List<User> users;
+
+    private Hashtable<Socket,DataOutputStream> outputStreams = new Hashtable();
+
+    ArrayList<String> usernames;
     List<User> usersGroup1;
     List<User> usersGroup2;
     List<User> usersGroup3;
@@ -18,7 +21,6 @@ public class Server {
     List<Message> messagesGroup3;
     List<Message> messagesGroup4;
     List<Message> messagesGroup5;
-    private DataInputStream din;
 
     // retrieveMessage(MessageID){
     //     return MessageContent
@@ -29,7 +31,7 @@ public class Server {
     // }
 
     public Server(int portNumber) throws IOException {
-        //users = Collections.<User>emptyList();
+        usernames = new ArrayList<String>();
         this.ss = new ServerSocket(portNumber);
         while(true){ //start loop to accept incoming requests
 
@@ -38,36 +40,32 @@ public class Server {
             System.out.println( "accepting on " + ss );
             DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 
-            din = new DataInputStream(
-                new BufferedInputStream(socket.getInputStream()));
-            // User newUser = new User(dout, socket);
-            // users.add(newUser);
+            outputStreams.put( socket, dout );
 
             new ServerThread(this, socket);
         }
     }
 
-    public List<User> getUsers(){
-        return this.users;
+    Enumeration getOutputStreams() {
+        return outputStreams.elements();
     }
 
     void sendToAll(String message) {
-        String[] splitMessage = message.split(":");
+        String[] splitMessage = message.split("@");
         String group = splitMessage[4];
         String sender = splitMessage[1];
 
-        synchronized(this.getUsers()) {
-            List<User> users = this.getUsers();
+        synchronized( outputStreams ) {
+            // For each client ...
+            for (Enumeration e = getOutputStreams(); e.hasMoreElements(); ) {
+            // ... get the output stream ...
+            DataOutputStream dout = (DataOutputStream)e.nextElement();
+            // ... and send the message
+            try {
+            System.out.println( "Sending TO ALL : " + message );
+            dout.writeUTF( message );
 
-            for(User user: users) {
-
-                user.getChatPanel().getChatWindow().append(message);
-
-                // String username = user.getUsername();
-                // if(username != sender)
-                //{
-
-                //}
+            } catch( IOException ie ) { System.out.println( ie ); }
             }
         }
     }

@@ -13,24 +13,10 @@
         },
         {
             "type": "java",
-            "name": "Launch Server",
-            "request": "launch",
-            "mainClass": "Server",
-            "projectName": "BulletinBoard_244c11c6"
-        },
-        {
-            "type": "java",
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "Main",
             "projectName": "BulletinBoard_244c11c6"
-        },
-        {
-            "type": "java",
-            "name": "Launch Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "BulletinBoard-1_ab26dc72"
         },
         {
             "type": "lldb",
