@@ -41,10 +41,10 @@ public class Message{
     public String toProtocol() {
         return
             getMessageID() +
-            ":" + getSender()+
-            ":" + getMessageDate()+
-            ":" + getSubject() +":" + getGroup()
-            + ":" + getContents();
+            "@" + getSender()+
+            "@" + getMessageDate()+
+            "@" + getSubject() +"@" + getGroup()
+            + "@" + getContents();
     }
 
     public Group getGroup() {

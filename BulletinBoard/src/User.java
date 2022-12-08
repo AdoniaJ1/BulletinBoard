@@ -6,7 +6,8 @@ public class  User {
     private Socket socketNumber;
     private DataOutputStream outputStream;
     private boolean isConnected;
-    
+    private ChatPanel chatPanel;
+
     public User(DataOutputStream outputStream, Socket socketNumber){//other arguments?
         //this.username = username;
         this.outputStream = outputStream;
@@ -15,6 +16,18 @@ public class  User {
     }
 
     public User(String username){
+        this.username = username;
+    }
+
+    public void setChatPanel(ChatPanel chatPanel){
+        this.chatPanel = chatPanel;
+    }
+
+    public ChatPanel getChatPanel() {
+        return this.chatPanel;
+    }
+
+    public void setUsername(String username){
         this.username = username;
     }
 

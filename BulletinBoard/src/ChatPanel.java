@@ -9,110 +9,103 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
 
-public class ChatPanel extends JPanel implements Runnable{
+public class ChatPanel extends JPanel{
 
-    private static JTextField subjectBox = new JTextField(25);
-    private static JTextField contentBox = new JTextField(25);
-    private JTextArea chatWindow = new JTextArea();
-    private static JButton enterButton = new JButton("Enter");
+    private JTextField subjectBox = new JTextField(20);
+    private JTextArea contentBox = new JTextArea(5,20);
+    private JTextArea chatWindow = new JTextArea(5,20);
+    private JButton enterButton = new JButton("Enter");
+    GridBagConstraints chatLayout = new GridBagConstraints();
+    JPanel chats;
     // private static JButton disconnectButton = new JButton("Disconnect");
-    // private static JButton joinGroup1Button = new JButton("Join Group 1");
-    // private static JButton joinroup2Button = new JButton("Join Group 2");
-    // private static JButton joinGroup3Button = new JButton("Join Group 3");
-    // private static JButton joinGroup4Button = new JButton("Join Group 4");
-    // private static JButton joinGroup5Button = new JButton("Join Group 5");
-
-   //setting the layuout for the
-        
-    private DataOutputStream dout;
-
-    private Socket socket;
-    private Server server;
 
     private int messageID;
     private Message messageEntered;
     private JLabel groupName;
-    private User user;
     private Group group;
-    private DataInputStream din;
+    private String sender;
 
-    public ChatPanel(String groupName, User user, Group group) {
-        
-        this.user = user;
+    public ChatPanel() {
+    }
+    public ChatPanel(String groupName, Group group, DataOutputStream dout) {
         this.group = group;
-        //setLayout(getLayout());
+
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor= GridBagConstraints.WEST;
+        add(new JLabel("Subject:"), gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx= GridBagConstraints.RELATIVE;
+        gbc.gridy = 0;
+        this.add(subjectBox, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = GridBagConstraints.RELATIVE;
+        gbc.gridy = 0;
+        this.add(enterButton,gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        add(new JLabel("Content:"), gbc);
+
+        gbc.gridx++;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        add(new JScrollPane(contentBox), gbc);
+
+        this.chats = new JPanel();
+        chats.setLayout(new GridBagLayout());
+        GridBagConstraints chatLayout = new GridBagConstraints();
+        chatLayout.fill = GridBagConstraints.HORIZONTAL;
+        chatLayout.gridx = 0;
+        chatLayout.gridy = 0;
+        this.chats.add(new JLabel("Bulletin Board"), chatLayout);
+
+        gbc.gridwidth = 1;
+        gbc.gridx=0;
+        gbc.gridy++;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        this.add(this.chats,gbc);
+
         setGroupName(groupName);
-        this.add(subjectBox);
-        this.add(contentBox);
         enterButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                enterButtonClick(e);
+                try {
+                    enterButtonClick(e, dout);
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         });
-
-        // try {
-        // // Initiate the connection
-        // this.socket = new Socket(InetAddress.getLocalHost().getHostName(), 195);
-        // // We got a connection! Tell the world
-        // System.out.println( "connected to "+socket );
-        // // Let's grab the streams and create DataInput/Output streams
-        // // from them
-        // din = new DataInputStream( socket.getInputStream() );
-        // dout = new DataOutputStream( socket.getOutputStream() );
-        // // Start a background thread for receiving messages
-        // new Thread( this ).start();
-        // } catch( IOException ie ) { System.out.println( ie ); }
-        // disconnectButton.addActionListener(new ActionListener(){
-        //     public void actionPerformed(ActionEvent e){
-        //         disconnectButtonClick(e);
-        //     }
-        // });
-        // joinGroup1Button.addActionListener(new ActionListener(){
-        //     public void actionPerformed(ActionEvent e){
-        //         addUserToGroup(e);
-        //     }
-        // });
     }
 
-     public void enterButtonClick(ActionEvent e){
+     public void enterButtonClick(ActionEvent e, DataOutputStream dout) throws IOException{
+        System.out.println( "enterbuttonClick!!!!!\n" );
         String subject = subjectBox.getText();
         String content = contentBox.getText();
-        messageEntered = new Message(messageID, user.getUsername(), LocalDateTime.now(), subject, content, this.group);
-        this.chatWindow.append(messageEntered.toString()+"\n");
-        switch(this.group) {
-            case PUBLIC:
-                this.server.publicMessages.add(messageEntered);
-                break;
-            case ONE:
-                this.server.messagesGroup1.add(messageEntered);
-                break;
-            case TWO:
-                this.server.messagesGroup2.add(messageEntered);
-                break;
-            case THREE:
-                this.server.messagesGroup3.add(messageEntered);
-                break;
-            case FOUR:
-                this.server.messagesGroup4.add(messageEntered);
-                break;
-            case FIVE:
-                this.server.messagesGroup5.add(messageEntered);
-                break;
-            default:
-                break;
-        }
-        processMessage(messageEntered);
+        messageEntered = new Message(this.messageID, this.getUsername(), LocalDateTime.now(), subject, content, this.group);
+
+        processMessage(messageEntered, dout);
         this.messageID++;
     }
 
-    private void processMessage(Message message ) {
-        try {
+    private void processMessage(Message message, DataOutputStream dout ) throws IOException {
+
+        System.out.println( "processing message: "+message.toProtocol() );
+
         // Send it to the server
-        this.dout.writeUTF( message.toProtocol());
+        dout.writeUTF(message.toProtocol());
         // Clear out text input field
         subjectBox.setText( "" );
         contentBox.setText( "" );
-        } catch( IOException ie ) { System.out.println( ie ); }
     }
 
     public JLabel getGroupName() {
@@ -123,16 +116,22 @@ public class ChatPanel extends JPanel implements Runnable{
         return this.group;
     }
 
+    public JTextArea getChatWindow() {
+        return this.chatWindow;
+    }
+
     public void setGroupName(String groupName) {
 
         this.groupName = new JLabel(groupName);
     }
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
+    public String getUsername() {
+        return this.sender;
+    }
+
+    public void setUsername(String username) {
+        this.sender = username;
+    }
 
     // public void disconnectButtonClick(ActionEvent e){
     //     this.server.removeConnection(user, group);
