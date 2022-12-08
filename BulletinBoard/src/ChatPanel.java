@@ -15,6 +15,8 @@ public class ChatPanel extends JPanel{
     private JTextArea contentBox = new JTextArea(5,20);
     private JTextArea chatWindow = new JTextArea(5,20);
     private JButton enterButton = new JButton("Enter");
+    GridBagConstraints chatLayout = new GridBagConstraints();
+    JPanel chats;
     // private static JButton disconnectButton = new JButton("Disconnect");
 
     private int messageID;
@@ -22,47 +24,55 @@ public class ChatPanel extends JPanel{
     private JLabel groupName;
     private Group group;
     private String sender;
-    JPanel chats;
 
     public ChatPanel() {
     }
     public ChatPanel(String groupName, Group group, DataOutputStream dout) {
-
-        this.chats = new JPanel();
         this.group = group;
+
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor= GridBagConstraints.WEST;
         add(new JLabel("Subject:"), gbc);
 
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = GridBagConstraints.RELATIVE;
+        gbc.gridwidth = 1;
+        gbc.gridx= GridBagConstraints.RELATIVE;
         gbc.gridy = 0;
         this.add(subjectBox, gbc);
 
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = GridBagConstraints.RELATIVE;
+        gbc.gridy = 0;
+        this.add(enterButton,gbc);
+
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         add(new JLabel("Content:"), gbc);
 
         gbc.gridx++;
-        gbc.gridwidth = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         add(new JScrollPane(contentBox), gbc);
 
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth=GridBagConstraints.REMAINDER;
-        gbc.gridx = GridBagConstraints.RELATIVE;
-        gbc.gridy = 0;
-        this.add(enterButton,gbc);
+        this.chats = new JPanel();
+        chats.setLayout(new GridBagLayout());
+        GridBagConstraints chatLayout = new GridBagConstraints();
+        chatLayout.fill = GridBagConstraints.HORIZONTAL;
+        chatLayout.gridx = 0;
+        chatLayout.gridy = 0;
+        this.chats.add(new JLabel("Bulletin Board"), chatLayout);
 
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        this.add(chats,gbc);
+        gbc.gridwidth = 1;
+        gbc.gridx=0;
+        gbc.gridy++;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        this.add(this.chats,gbc);
 
         setGroupName(groupName);
         enterButton.addActionListener(new ActionListener(){

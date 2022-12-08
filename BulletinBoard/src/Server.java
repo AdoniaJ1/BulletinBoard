@@ -58,9 +58,6 @@ public class Server {
     }
 
     void sendToAll(String message) {
-        String[] splitMessage = message.split("@");
-        String group = splitMessage[4];
-        String sender = splitMessage[1];
 
         synchronized( outputStreams ) {
             // For each client ...
@@ -74,7 +71,8 @@ public class Server {
 
             } catch( IOException ie ) { System.out.println( ie ); }
             }
-        }
+
+    }
     }
 
     // void addUserToServer(user){

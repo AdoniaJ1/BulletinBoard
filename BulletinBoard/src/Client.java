@@ -69,44 +69,72 @@ public class Client implements Runnable
         while (true) {
             String message = din.readUTF();
             String[] splitMessage = message.split("@");
-            String messageTag = splitMessage[0]+","+splitMessage[1]+","+splitMessage[2]+","+splitMessage[3];
+            String bulletinMessage = "";
 
-            JToggleButton messageAsButton = new JToggleButton(messageTag);
-            messageAsButton.addItemListener(new ItemListener(){
-                public void itemStateChanged(ItemEvent itemEvent) {
-                    int state = itemEvent.getStateChange();
-
-                    if (state == ItemEvent.SELECTED){
-                        messageAsButton.setText(splitMessage[5]);
-                    }else{
-                        messageAsButton.setText(splitMessage[0]+","+splitMessage[1]+","+splitMessage[2]+","+splitMessage[3]);
-                    }
-                }
-
-            });
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = GridBagConstraints.RELATIVE;
-            //no? this.tabbedPane.setSelectedComponent(messageAsButton);
-            String groupToSendString= splitMessage[4];
-
-            int totalTabs = tabbedPane.getTabCount();
-            for(int i = 1; i < totalTabs; i++)
-            {
-            ChatPanel c = (ChatPanel) tabbedPane.getComponentAt(i);
-            String groupName = c.getGroupName().getText();
-                if(groupName.equals(groupToSendString)){
-                    System.out.println("adding message button");
-                    c.add(messageAsButton);
+            if(splitMessage[0].equals("newUserAlert")){
+                int totalTabs = tabbedPane.getTabCount();
+                for(int i = 1; i < totalTabs; i++)
+                {
+                    ChatPanel c = displayToChatPanels(i, splitMessage[1], null, tabbedPane,splitMessage[2]);
                     tabbedPane.setComponentAt(i, c);
                     tabbedPane.revalidate();
                 }
-            }
-        }
 
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+            }else{
+                bulletinMessage = splitMessage[0]+","+splitMessage[1]+","+splitMessage[2]+","+splitMessage[3];
+                JToggleButton messageAsButton = new JToggleButton(bulletinMessage);
+                messageAsButton.addItemListener(new ItemListener(){
+                    public void itemStateChanged(ItemEvent itemEvent) {
+                        int state = itemEvent.getStateChange();
+                        if (state == ItemEvent.SELECTED){
+                            try {
+                                System.out.println(splitMessage[5]);
+                                messageAsButton.setText(splitMessage[5]);
+                            } catch(ArrayIndexOutOfBoundsException e) {
+                                messageAsButton.setText("!empty post!");
+                            }
+                        }else{
+                            messageAsButton.setText(splitMessage[0]+","+splitMessage[1]+","+splitMessage[2]+","+splitMessage[3]);
+                        }
+                    }
+                });
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = GridBagConstraints.RELATIVE;
+                String groupToSendString = splitMessage[4];
+
+                int totalTabs = tabbedPane.getTabCount();
+                for(int i = 1; i < totalTabs; i++)
+                {
+                    ChatPanel c = displayToChatPanels(i, groupToSendString, messageAsButton, tabbedPane, null);
+                    tabbedPane.setComponentAt(i, c);
+                    tabbedPane.revalidate();
+                }
+                }
     }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public ChatPanel displayToChatPanels(Integer i, String group, JToggleButton button, BulletinTabbedPane tabbedPane, String username){
+        ChatPanel c = (ChatPanel) tabbedPane.getComponentAt(i);
+        String groupName = c.getGroupName().getText();
+        GridBagLayout chatLay = (GridBagLayout) c.chats.getLayout();
+        GridBagConstraints chatGbc = chatLay.getConstraints(c);
+        chatGbc.gridx = 0;
+        chatGbc.gridy = GridBagConstraints.RELATIVE;
+
+        if(groupName.equals(group) && button!=null){
+            System.out.println("adding message button");
+            c.chats.add(button,chatGbc);
+        }else if(groupName.equals(group)){
+            JTextArea newUserMessage = new JTextArea();
+            newUserMessage.setText("New User: \""+username+"\" has entered the chat!");
+            newUserMessage.setEditable(false);
+            c.chats.add(newUserMessage, chatGbc);
+        }
+        return c;
     }
 }

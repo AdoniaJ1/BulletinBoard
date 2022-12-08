@@ -47,9 +47,10 @@ public void run() {
                             server.groupListsMap.get(group).add(splitMessage[1]);
                         }
                     }
-                    dout.writeUTF("newUser@"+splitMessage[0]+"@"+splitMessage[1]);
+                    message = "newUserAlert@"+splitMessage[0]+"@"+splitMessage[1];
+                    System.out.println(message);
+                    server.sendToAll(message);
 
-                    System.out.println(splitMessage[0]+splitMessage[1]);
                     break;
                 default:
                     server.sendToAll(message);
